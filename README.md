@@ -21,7 +21,23 @@ Welcome to the **Pace CLI**.
 go install github.com/fakepixels/pace@latest
 ```
 
-Make sure your `$GOPATH/bin` (or `$HOME/go/bin`) is in your `$PATH`.
+- By default, Go installs binaries to `$GOPATH/bin` (usually `$HOME/go/bin`).
+- To run `pace` from anywhere, make sure this directory is in your `$PATH`.
+
+### Add Go bin to your PATH
+
+**For Bash or Zsh:**
+```sh
+echo 'export PATH="$PATH:$HOME/go/bin"' >> ~/.bashrc   # for Bash
+# or
+echo 'export PATH="$PATH:$HOME/go/bin"' >> ~/.zshrc    # for Zsh
+source ~/.bashrc   # or source ~/.zshrc
+```
+
+**For Fish shell:**
+```sh
+set -U fish_user_paths $fish_user_paths $HOME/go/bin
+```
 
 ---
 
