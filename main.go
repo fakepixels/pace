@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/bubbles/viewport"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/glamour"
 )
 
 // App screens
@@ -46,9 +46,13 @@ Authentic partnerships here with founders are born not from comfort but from rel
 If you are tugging at the seams of reality, writing the first line of code, a half‑finished memo, a prototype repo, a voice note scribbled at 3 a.m.—I will meet you there, in the dark, before the world wakes up. I publish ideas, theses, and code frequently, and will be a skin-in-the-game partner in crime. Together, we can make inevitability arrive sooner.`
 
 var (
+	neonBlue = lipgloss.Color("#1e90ff") // Neon blue
+	neonBlueLight = lipgloss.Color("#63aaff") // Lighter neon blue for selected
+
 	announcementStyle = lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("63")).
+		BorderForeground(neonBlue).
+		Foreground(lipgloss.Color("#0a1a2f")).
 		Padding(1, 2).
 		Margin(1, 2).
 		Width(80)
@@ -62,22 +66,22 @@ var (
 		Padding(0, 2).
 		Margin(0, 0).
 		Border(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("#7aa2f7")).
-		Foreground(lipgloss.Color("#c0caf5"))
+		BorderForeground(neonBlue).
+		Foreground(neonBlue)
 
 	menuBoxSelectedStyle = menuBoxStyle.Copy().
-		BorderForeground(lipgloss.Color("#bb9af7")).
+		BorderForeground(neonBlueLight).
 		Background(lipgloss.Color("#24283b")).
-		Foreground(lipgloss.Color("#bb9af7")).
+		Foreground(neonBlueLight).
 		Bold(true)
 
 	menuTitleStyle = lipgloss.NewStyle().
 		Bold(true).
-		Foreground(lipgloss.Color("#7aa2f7")).
+		Foreground(neonBlue).
 		MarginBottom(1)
 
 	menuFooterStyle = lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#565f89")).
+		Foreground(neonBlue).
 		MarginTop(1)
 )
 
@@ -96,13 +100,14 @@ type model struct {
 func initialModel() model {
 	viewportWidth := 80
 	viewportHeight := 20
-	// Render announcement as markdown with glamour
-	styled, err := glamour.Render(announcementText, "tokyo-night")
-	if err != nil {
-		styled = announcementText // fallback
+	paragraphs := strings.Split(announcementText, "\n\n")
+	wrappedParagraphs := make([]string, len(paragraphs))
+	for i, p := range paragraphs {
+		wrappedParagraphs[i] = lipgloss.NewStyle().Width(viewportWidth - 4).Render(p)
 	}
+	wrapped := strings.Join(wrappedParagraphs, "\n\n")
 	vp := viewport.New(viewportWidth, viewportHeight)
-	vp.SetContent(styled)
+	vp.SetContent(wrapped)
 	return model{
 		screen:      screenWelcome,
 		menuChoices: []string{"Read announcement post", "Say hello to Tina", "Try my luck", "Go to announcement site"},
@@ -193,21 +198,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.screen == screenAnnouncement {
 			m.viewport.Width = msg.Width - 8 // account for border/margin
 			m.viewport.Height = msg.Height - 6
-			// Render announcement as markdown with glamour for new width
-			renderer, err := glamour.NewTermRenderer(
-				glamour.WithStylePath("tokyo-night"),
-				glamour.WithWordWrap(m.viewport.Width-4),
-			)
-			var styled string
-			if err == nil {
-				styled, err = renderer.Render(announcementText)
-				if err != nil {
-					styled = announcementText
-				}
-			} else {
-				styled = announcementText
+			// Re-wrap the text to the new width, preserving paragraphs
+			paragraphs := strings.Split(announcementText, "\n\n")
+			wrappedParagraphs := make([]string, len(paragraphs))
+			for i, p := range paragraphs {
+				wrappedParagraphs[i] = lipgloss.NewStyle().Width(m.viewport.Width - 4).Render(p)
 			}
-			m.viewport.SetContent(styled)
+			wrapped := strings.Join(wrappedParagraphs, "\n\n")
+			m.viewport.SetContent(wrapped)
 			m.viewportReady = true
 		}
 	}
