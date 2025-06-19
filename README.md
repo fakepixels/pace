@@ -1,53 +1,79 @@
-# ✨ Pace CLI
+# Pace CLI
 
-```
 .------..------..------..------.
 |P.--. ||A.--. ||C.--. ||E.--. |
 | :/\: || (\/) || :/\: || (\/) |
 | (__) || :\/: || :\/: || :\/: |
 | '--'P|| '--'A|| '--'C|| '--'E|
 '------''------''------''------'
+
+A CLI tool for Pace Capital announcements and updates.
+
+## Installation
+
+### Option 1: Download Pre-built Binary (Recommended)
+
+1. Visit the [releases page](https://github.com/fakepixels/pace/releases/latest)
+2. Download the archive for your operating system:
+   - macOS Intel: `pace_Darwin_x86_64.tar.gz`
+   - macOS Apple Silicon: `pace_Darwin_arm64.tar.gz`
+   - Linux x86_64: `pace_Linux_x86_64.tar.gz`
+   - Linux ARM64: `pace_Linux_arm64.tar.gz`
+   - Windows x86_64: `pace_Windows_x86_64.zip`
+   - Windows ARM64: `pace_Windows_arm64.zip`
+3. Extract the archive:
+   ```bash
+   # For macOS/Linux:
+   tar xzf pace_*_*.tar.gz
+   
+   # For Windows:
+   # Use Windows Explorer to extract the .zip file
+   ```
+4. Move the binary to your PATH:
+   ```bash
+   # macOS/Linux:
+   sudo mv pace /usr/local/bin/
+
+   # Windows:
+   # Move pace.exe to C:\Windows\System32\
+   ```
+
+### Option 2: Build from Source
+
+If you have Go 1.24.4 or later installed:
+
+```bash
+go install github.com/fakepixels/pace@latest
 ```
+
+## Usage
+
+Simply run:
+
+```bash
+pace
+```
+
+Navigate through the menu using:
+- ↑/↓ or k/j to move
+- Enter to select
+- b to go back
+- q to quit
+
+## Features
+
+- Read announcement posts
+- Send a hello email to Tina
+- Discover random Substack posts
+- Visit the announcement site
+
+## License
+
+MIT
 
 Welcome to the **Pace CLI**. 
 
 > "Hey! Only real G found their way here."
-
----
-
-## Installation
-
-```sh
-go install github.com/fakepixels/pace@latest
-```
-
-- By default, Go installs binaries to `$GOPATH/bin` (usually `$HOME/go/bin`).
-- To run `pace` from anywhere, make sure this directory is in your `$PATH`.
-
-### Add Go bin to your PATH
-
-**For Bash or Zsh:**
-```sh
-echo 'export PATH="$PATH:$HOME/go/bin"' >> ~/.bashrc   # for Bash
-# or
-echo 'export PATH="$PATH:$HOME/go/bin"' >> ~/.zshrc    # for Zsh
-source ~/.bashrc   # or source ~/.zshrc
-```
-
-**For Fish shell:**
-```sh
-set -U fish_user_paths $fish_user_paths $HOME/go/bin
-```
-
----
-
-## 🕹️ Usage
-
-```sh
-pace
-```
-
-Navigate the menu, read the announcement, say hi to Tina, or try your luck with a random Substack post!
 
 ---
 
