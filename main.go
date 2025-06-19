@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"math/rand"
 	"os"
@@ -244,7 +245,18 @@ func (m model) View() string {
 	return ""
 }
 
+var version = "dev" // will be set by goreleaser
+
 func main() {
+	flagVersion := false
+	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
+	flagSet.BoolVar(&flagVersion, "version", false, "print version and exit")
+	flagSet.BoolVar(&flagVersion, "v", false, "print version and exit (shorthand)")
+	flagSet.Parse(os.Args[1:])
+	if flagVersion {
+		fmt.Println(version)
+		return
+	}
 	p := tea.NewProgram(initialModel())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v\n", err)
