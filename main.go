@@ -65,6 +65,33 @@ var (
 	menuFooterStyle = lipgloss.NewStyle().
 		Foreground(neonBlue).
 		MarginTop(1)
+
+	welcomeLogo = `
+.------..------..------..------.
+|P.--. ||A.--. ||C.--. ||E.--. |
+| :/\: || (\/) || :/\: || (\/) |
+| (__) || :\/: || :\/: || :\/: |
+| '--'P|| '--'A|| '--'C|| '--'E|
+'------''------''------''------'
+`
+	welcomeLogoStyle = lipgloss.NewStyle().
+		Foreground(neonBlue).
+		Bold(true).
+		Margin(1, 0, 0, 0).
+		Align(lipgloss.Center)
+
+	welcomeMsgStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.Color("#a259f7")).
+		Bold(true).
+		Align(lipgloss.Center)
+
+	welcomeBoxStyle = lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(neonBlue).
+		Background(lipgloss.Color("#181825")).
+		Padding(1, 4).
+		Width(60).
+		Align(lipgloss.Center)
 )
 
 type model struct {
@@ -216,7 +243,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	switch m.screen {
 	case screenWelcome:
-		return "Hey! Only real G found their way here.\n\nPress Enter to continue..."
+		logo := welcomeLogoStyle.Render(welcomeLogo)
+		msg := welcomeMsgStyle.Render("Hey! Only real G found their way here.")
+		prompt := lipgloss.NewStyle().Align(lipgloss.Center).Render("Press Enter to continue...")
+		return "\n" + welcomeBoxStyle.Render(logo+"\n"+msg+"\n\n"+prompt)
 	case screenMenu:
 		s := menuTitleStyle.Render("What would you like to do?") + "\n"
 		for i, choice := range m.menuChoices {

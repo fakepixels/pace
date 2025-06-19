@@ -29,3 +29,12 @@ Authentic partnerships here with founders are born not from comfort but from rel
 If you are tugging at the seams of reality, writing the first line of code, a half‑finished memo, a prototype repo, a voice note scribbled at 3 a.m.—I will meet you there, in the dark, before the world wakes up. 
 
 Together, we can make inevitability arrive sooner. 
+
+welcomeLogo = `
+.------..------..------..------.
+|P.--. ||A.--. ||C.--. ||E.--. |
+| :/\: || (\/) || :/\: || (\/) |
+| (__) || :\/: || :\/: || :\/: |
+| '--'P|| '--'A|| '--'C|| '--'E|
+'------''------''------''------'
+` 
