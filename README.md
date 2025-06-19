@@ -11,7 +11,15 @@ A CLI tool for Pace Capital announcements and updates.
 
 ## Installation
 
-### Option 1: Download Pre-built Binary (Recommended)
+### Option 1: Build from Source
+
+If you have Go 1.24.4 or later installed:
+
+```bash
+go install github.com/fakepixels/pace@latest
+```
+
+### Option 2: Download Pre-built Binary
 
 1. Visit the [releases page](https://github.com/fakepixels/pace/releases/latest)
 2. Download the archive for your operating system:
@@ -37,14 +45,6 @@ A CLI tool for Pace Capital announcements and updates.
    # Windows:
    # Move pace.exe to C:\Windows\System32\
    ```
-
-### Option 2: Build from Source
-
-If you have Go 1.24.4 or later installed:
-
-```bash
-go install github.com/fakepixels/pace@latest
-```
 
 ## Usage
 
