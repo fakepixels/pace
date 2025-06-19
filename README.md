@@ -52,3 +52,5 @@ pace
 - Let me know when you're ready for the next step, or if you want me to generate the version flag code for you!
 
 git remote -v
+
+go clean -modcache
