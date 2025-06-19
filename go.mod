@@ -1,5 +1,4 @@
-module pace-cli-app
-
+module github.com/fakepixels/pace
 go 1.24.4
 
 require (
