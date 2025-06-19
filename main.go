@@ -5,12 +5,14 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
-	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/bubbles/viewport"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/glamour"
+	"io/ioutil"
+	"os/exec"
 )
 
 // App screens
@@ -25,35 +27,14 @@ const (
 
 const announcementSiteURL = "https://pace-announcement.vercel.app/"
 
-var announcementText = `Every morning, we wake into histories unfolding, currents of possibility quietly reshaping the future. We stand together at the edge of a great transformation, sensing the gathering force of change. This moment is thrilling and unsettling, stripping away distractions and revealing the one thing that truly matters: our infinite capacity for creation.
-
-Creation has never been this intimate or explosive. Agentic systems, 24/7 onchain markets, open-source chips, neural interfaces, and generative media engines have scattered the seeds of genesis into every corner of our lives. We have compressed the gap between imagination and instantiation down to milliseconds.
-Such profound compression demands a new kind of partner. Partners who can navigate entropy, sense the right moment to intervene, and place contrarian bets before the faint signal becomes consensus. Partners possessed by the same obsession that keeps founders awake at 3 a.m.
-
-Obsession isn't a lifestyle, it's the necessary cost of conviction. I learned that building my startup Station Labs, hammering late‑night builds with my co-founders until we finally felt like the product was pushing the boundaries of onchain DevX and UX. We later got acquired by Coinbase to become part of Base, where I led the 0 to 1 of some of the most well-loved developer tools including OnchainKit, MiniKit, and Base MCP. Obsession compels us to stake a claim long before others even realize there's a map.
-The most transformative opportunities arise where deep obsession meets potent societal shifts. The migration from traditional finance to crypto rails, the transition from fossil fuels to renewables, the decentralization of inference to the edge, and the evolution from passive media to personalized experiences—all begin subtly, then swiftly remake our world.
-
-Building at these turning points, just before their magnitude becomes undeniable, fuels my day and keeps me awake at night.
-
-I've known the Pace team and witnessed its growth for many years, first as a junior investor, then as a founder they backed. As much as rejoining the team feels like homecoming, it feels more like joining something brand new: bigger, sharper, and even more assured of what it represents in the ecosystem.
-
-Pace is built for the sliver of time after impossible and before obvious; we practice pre‑consensus investing: go deep, decide quickly, ignore the crowd. We trade broad opinions for sharp theses, comfort for honesty, gradients for stark clarity. Exceptional investing at Pace transcends identifying great companies; it demands precision of thought, rapid learning curves, and dedication to founders.
-Central to our philosophy is "double-loop learning", a perpetual refinement of frameworks that illuminate not only the essence of transformative businesses and technologies but also our deepest intuitions and biases. This discipline compels us beyond the question, "Why does this company matter?" and into deeper territory: "Why does it resonate uniquely with me, and what makes me the most valuable partner to this founder?"
-Double-loop learning inherently rejects superficial analysis or detached market maps that miss the essence of extraordinary, category-defining companies. Instead, we strive for profoundly personal, fiercely introspective clarity, identifying the sparks destined to ignite new markets before they're visible to the world.
-
-While others construct empires, Pace deliberately wants to build a temple dedicated to clarity, originality, and conviction. Our ambition isn't measured merely by the size of the funds we raise, but by the magnitude of returns our clarity unlocks, the audacity of our challenges to orthodoxy, and our courage to act decisively before consensus emerges.
-Authentic partnerships here with founders are born not from comfort but from relentless honesty. We rigorously interrogate assumptions, sharpen intuitions, and demand intentionality at every juncture. We commit ourselves to visionary founders whose obsessions align with the most potent undercurrents reshaping society, whose work defines not just markets but entire paradigms.
-
-If you are tugging at the seams of reality, writing the first line of code, a half‑finished memo, a prototype repo, a voice note scribbled at 3 a.m.—I will meet you there, in the dark, before the world wakes up. I publish ideas, theses, and code frequently, and will be a skin-in-the-game partner in crime. Together, we can make inevitability arrive sooner.`
-
 var (
 	neonBlue = lipgloss.Color("#1e90ff") // Neon blue
 	neonBlueLight = lipgloss.Color("#63aaff") // Lighter neon blue for selected
 
 	announcementStyle = lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
-		BorderForeground(neonBlue).
-		Foreground(lipgloss.Color("#0a1a2f")).
+		BorderForeground(lipgloss.Color("#888888")).
+		Foreground(lipgloss.Color("#a259f7")).
 		Padding(1, 2).
 		Margin(1, 2).
 		Width(80)
@@ -96,19 +77,30 @@ type model struct {
 	// For announcement
 	viewport viewport.Model
 	viewportReady bool
+	announcementMD string // holds the loaded markdown
+	announcementRendered string // holds the glamour-rendered output
 }
 
 func initialModel() model {
 	viewportWidth := 80
 	viewportHeight := 20
-	paragraphs := strings.Split(announcementText, "\n\n")
-	wrappedParagraphs := make([]string, len(paragraphs))
-	for i, p := range paragraphs {
-		wrappedParagraphs[i] = lipgloss.NewStyle().Width(viewportWidth - 4).Render(p)
+	// Load announcement markdown from file
+	mdBytes, err := ioutil.ReadFile("announcement.md")
+	md := ""
+	if err == nil {
+		md = string(mdBytes)
 	}
-	wrapped := strings.Join(wrappedParagraphs, "\n\n")
+	// Render with Glamour
+	styled := ""
+	if md != "" {
+		r, _ := glamour.NewTermRenderer(
+			glamour.WithAutoStyle(),
+			glamour.WithWordWrap(viewportWidth-4),
+		)
+		styled, _ = r.Render(md)
+	}
 	vp := viewport.New(viewportWidth, viewportHeight)
-	vp.SetContent(wrapped)
+	vp.SetContent(styled)
 	return model{
 		screen:      screenWelcome,
 		menuChoices: []string{"Read announcement post", "Say hello to Tina", "Try my luck", "Go to announcement site"},
@@ -122,6 +114,8 @@ func initialModel() model {
 			"https://fakepixels.substack.com/p/bring-the-mind-home",
 		},
 		viewport: vp,
+		announcementMD: md,
+		announcementRendered: styled,
 	}
 }
 
@@ -154,13 +148,18 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				case 0:
 					m.screen = screenAnnouncement
 				case 1:
+					// Open mailto link
+					mailto := "mailto:tina@pacecapital.com?subject=Hi%20from%20the%20dark&body=I%20saw%20your%20Pace%20CLI%20and%20wanted%20to%20say%20hi."
+					exec.Command("open", mailto).Start()
 					m.screen = screenHelloTina
 				case 2:
 					// Pick a random post
 					rand.Seed(time.Now().UnixNano())
 					m.selectedPost = m.substackPosts[rand.Intn(len(m.substackPosts))]
+					exec.Command("open", m.selectedPost).Start()
 					m.screen = screenTryMyLuck
 				case 3:
+					exec.Command("open", announcementSiteURL).Start()
 					m.screen = screenAnnouncementSite
 				}
 			}
@@ -199,14 +198,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.screen == screenAnnouncement {
 			m.viewport.Width = msg.Width - 8 // account for border/margin
 			m.viewport.Height = msg.Height - 6
-			// Re-wrap the text to the new width, preserving paragraphs
-			paragraphs := strings.Split(announcementText, "\n\n")
-			wrappedParagraphs := make([]string, len(paragraphs))
-			for i, p := range paragraphs {
-				wrappedParagraphs[i] = lipgloss.NewStyle().Width(m.viewport.Width - 4).Render(p)
+			if m.announcementMD != "" {
+				r, _ := glamour.NewTermRenderer(
+					glamour.WithAutoStyle(),
+					glamour.WithWordWrap(m.viewport.Width-4),
+				)
+				styled, _ := r.Render(m.announcementMD)
+				m.announcementRendered = styled
+				m.viewport.SetContent(styled)
 			}
-			wrapped := strings.Join(wrappedParagraphs, "\n\n")
-			m.viewport.SetContent(wrapped)
 			m.viewportReady = true
 		}
 	}
@@ -216,7 +216,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	switch m.screen {
 	case screenWelcome:
-		return "Hello! Welcome to the CLI app.\n\nPress Enter to continue..."
+		return "Hey! Only real G found their way here.\n\nPress Enter to continue..."
 	case screenMenu:
 		s := menuTitleStyle.Render("What would you like to do?") + "\n"
 		for i, choice := range m.menuChoices {
@@ -233,7 +233,7 @@ func (m model) View() string {
 		content := m.viewport.View()
 		return title + "\n" + announcementStyle.Render(content) + "\n[↑/↓/PgUp/PgDn scroll, b: back, q: quit]"
 	case screenHelloTina:
-		return "Hello, Tina! 👋\n\nHope you have a wonderful day!\n\nPress 'b' to go back, 'q' to quit."
+		return "Mail client opened! Say hi to Tina at tina@pacecapital.com\n\nPress 'b' to go back, 'q' to quit."
 	case screenTryMyLuck:
 		return fmt.Sprintf("Try My Luck\n\nHere's a random Substack post for you:\n%s\n\nPress 'b' to go back, 'q' to quit.", m.selectedPost)
 	case screenAnnouncementSite:
