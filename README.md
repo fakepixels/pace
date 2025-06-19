@@ -1,19 +1,25 @@
 # Pace CLI
 
-.------..------..------..------.
-|P.--. ||A.--. ||C.--. ||E.--. |
-| :/\: || (\/) || :/\: || (\/) |
-| (__) || :\/: || :\/: || :\/: |
-| '--'P|| '--'A|| '--'C|| '--'E|
-'------''------''------''------'
-
 A CLI tool for Pace Capital announcements and updates.
 
 ## Installation
 
 ### Option 1: Build from Source
 
-If you have Go 1.24.4 or later installed:
+If you have Go 1.24.4 or later installed. If you haven't, you can install Go by:
+
+1. Visit [Go's official download page](https://go.dev/dl/)
+2. Download the installer for your OS:
+   - For macOS: `go1.24.4.darwin-amd64.pkg` (Intel) or `go1.24.4.darwin-arm64.pkg` (Apple Silicon)
+   - For Windows: `go1.24.4.windows-amd64.msi`
+   - For Linux: `go1.24.4.linux-amd64.tar.gz`
+3. Run the installer and follow the prompts
+4. Verify installation by opening a terminal and running:
+   ```bash
+   go version
+   ```
+
+Once Go is installed:
 
 ```bash
 go install github.com/fakepixels/pace@latest
