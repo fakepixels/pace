@@ -46,7 +46,9 @@ pace
 
 ---
 
-### **Let’s Do Step 1 Now**
+### **Let's Do Step 1 Now**
 
 - Please rename your directory and update your `go.mod` as above.
-- Let me know when you’re ready for the next step, or if you want me to generate the version flag code for you!
+- Let me know when you're ready for the next step, or if you want me to generate the version flag code for you!
+
+git remote -v
