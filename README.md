@@ -1,5 +1,13 @@
 # Pace CLI
 
+![pace-cli.png](public/pace-cli.png)
+
+Welcome to the **Pace CLI**. 
+
+> "Hey! Only real G found their way here."
+
+---
+
 A CLI tool for Pace Capital announcements and updates.
 
 ## Installation
@@ -9,12 +17,8 @@ A CLI tool for Pace Capital announcements and updates.
 If you have Go 1.24.4 or later installed. If you haven't, you can install Go by:
 
 1. Visit [Go's official download page](https://go.dev/dl/)
-2. Download the installer for your OS:
-   - For macOS: `go1.24.4.darwin-amd64.pkg` (Intel) or `go1.24.4.darwin-arm64.pkg` (Apple Silicon)
-   - For Windows: `go1.24.4.windows-amd64.msi`
-   - For Linux: `go1.24.4.linux-amd64.tar.gz`
-3. Run the installer and follow the prompts
-4. Verify installation by opening a terminal and running:
+2. Run the installer and follow the prompts
+3. Verify installation by opening a terminal and running:
    ```bash
    go version
    ```
@@ -28,13 +32,7 @@ go install github.com/fakepixels/pace@latest
 ### Option 2: Download Pre-built Binary
 
 1. Visit the [releases page](https://github.com/fakepixels/pace/releases/latest)
-2. Download the archive for your operating system:
-   - macOS Intel: `pace_Darwin_x86_64.tar.gz`
-   - macOS Apple Silicon: `pace_Darwin_arm64.tar.gz`
-   - Linux x86_64: `pace_Linux_x86_64.tar.gz`
-   - Linux ARM64: `pace_Linux_arm64.tar.gz`
-   - Windows x86_64: `pace_Windows_x86_64.zip`
-   - Windows ARM64: `pace_Windows_arm64.zip`
+2. Download the archive for your operating system.
 3. Extract the archive:
    ```bash
    # For macOS/Linux:
@@ -71,17 +69,8 @@ Navigate through the menu using:
 - Read announcement posts
 - Send a hello email to Tina
 - Discover random Substack posts
-- Visit the announcement site
-
-## License
-
-MIT
-
-Welcome to the **Pace CLI**. 
-
-> "Hey! Only real G found their way here."
-
----
+- Visit [Pace Desktop](https://desktop.pacecapital.com/)
+- Secret drops, events, swag
 
 ## ğŸŒ Announcement Site
 
@@ -97,4 +86,4 @@ Pace CLI is a playful, artful terminal app for the Pace community, built with ğŸ
 
 ---
 
-Made by [Tina](mailto:tina@pacecapital.com).
+Made by [Tina](https://x.com/fkpxls).
