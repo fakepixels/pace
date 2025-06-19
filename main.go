@@ -22,10 +22,11 @@ const (
 	screenAnnouncement
 	screenHelloTina
 	screenTryMyLuck
-	screenAnnouncementSite
+	screenPaceDesktop
 )
 
 const announcementSiteURL = "https://pace-announcement.vercel.app/"
+const paceDesktopURL = "https://desktop.pacecapital.com/"
 
 var (
 	neonBlue = lipgloss.Color("#1e90ff") // Neon blue
@@ -130,7 +131,7 @@ func initialModel() model {
 	vp.SetContent(styled)
 	return model{
 		screen:      screenWelcome,
-		menuChoices: []string{"Read announcement post", "Say hello to Tina", "Try my luck", "Go to announcement site"},
+		menuChoices: []string{"Read announcement post", "Say hello to Tina", "Try my luck", "Go to Pace Desktop"},
 		substackPosts: []string{
 			"https://fakepixels.substack.com/p/context-is-all-you-need",
 			"https://fakepixels.substack.com/p/the-art-of-understanding-whats-going",
@@ -186,8 +187,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					exec.Command("open", m.selectedPost).Start()
 					m.screen = screenTryMyLuck
 				case 3:
-					exec.Command("open", announcementSiteURL).Start()
-					m.screen = screenAnnouncementSite
+					exec.Command("open", paceDesktopURL).Start()
+					m.screen = screenPaceDesktop
 				}
 			}
 		case screenAnnouncement:
@@ -203,10 +204,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.viewport.SetYOffset(m.viewport.YOffset + m.viewport.Height)
 			case "b":
 				m.screen = screenMenu
+			case "o":
+				exec.Command("open", announcementSiteURL).Start()
 			case "q", "ctrl+c":
 				return m, tea.Quit
 			}
-		case screenAnnouncementSite:
+		case screenPaceDesktop:
 			if msg.String() == "b" {
 				m.screen = screenMenu
 			}
@@ -261,15 +264,16 @@ func (m model) View() string {
 	case screenAnnouncement:
 		title := announcementTitleStyle.Render("Announcement Post")
 		content := m.viewport.View()
-		return title + "\n" + announcementStyle.Render(content) + "\n[↑/↓/PgUp/PgDn scroll, b: back, q: quit]"
+		controls := "\n[↑/↓/PgUp/PgDn scroll, o: open in browser, b: back, q: quit]"
+		return title + "\n" + announcementStyle.Render(content) + controls
 	case screenHelloTina:
 		return "Mail client opened! Say hi to Tina at tina@pacecapital.com\n\nPress 'b' to go back, 'q' to quit."
 	case screenTryMyLuck:
 		return fmt.Sprintf("Try My Luck\n\nHere's a random Substack post for you:\n%s\n\nPress 'b' to go back, 'q' to quit.", m.selectedPost)
-	case screenAnnouncementSite:
-		title := announcementTitleStyle.Render("Announcement Site")
-		url := lipgloss.NewStyle().Foreground(lipgloss.Color("33")).Underline(true).Render(announcementSiteURL)
-		msg := "Open this link in your browser (copy-paste):\n" + url + "\n\nPress 'b' to go back, 'q' to quit."
+	case screenPaceDesktop:
+		title := announcementTitleStyle.Render("Pace Desktop")
+		url := lipgloss.NewStyle().Foreground(lipgloss.Color("33")).Underline(true).Render(paceDesktopURL)
+		msg := "Opening Pace Desktop in your browser...\n" + url + "\n\nPress 'b' to go back, 'q' to quit."
 		return title + "\n" + announcementStyle.Render(msg)
 	}
 	return ""

@@ -1,6 +1,8 @@
 # I'm (Re)Joining Pace Capital
 
-## You're seeing this because you're one of the real ones. 
+# You're seeing this because you're one of the real ones. 
+
+# Press "o" to open original post in browser.
 
 Every morning, we wake into histories unfolding, currents of possibility quietly reshaping the future. We stand together at the edge of a great transformation, sensing the gathering force of change. This moment is thrilling and unsettling, stripping away distractions and revealing the one thing that truly matters: our infinite capacity for creation.
 
@@ -29,12 +31,3 @@ Authentic partnerships here with founders are born not from comfort but from rel
 If you are tugging at the seams of reality, writing the first line of code, a half‑finished memo, a prototype repo, a voice note scribbled at 3 a.m.—I will meet you there, in the dark, before the world wakes up. 
 
 Together, we can make inevitability arrive sooner. 
-
-welcomeLogo = `
-.------..------..------..------.
-|P.--. ||A.--. ||C.--. ||E.--. |
-| :/\: || (\/) || :/\: || (\/) |
-| (__) || :\/: || :\/: || :\/: |
-| '--'P|| '--'A|| '--'C|| '--'E|
-'------''------''------''------'
-` 
