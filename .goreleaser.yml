@@ -35,16 +35,6 @@ changelog:
       - Merge pull request
       - Merge branch
 
-brews:
-  - name: pace
-    homepage: "https://github.com/fakepixels/pace"
-    description: "A CLI tool for Pace Capital announcements and updates"
-    repository:
-      owner: fakepixels
-      name: homebrew-tap
-    install: |
-      bin.install "pace"
-
 release:
   github:
     owner: fakepixels
