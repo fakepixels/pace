@@ -172,6 +172,12 @@ func initialModel() model {
 					}
 					return nil
 				}),
+			huh.NewInput().
+				Key("company").
+				Title("Where do you work?"),
+			huh.NewInput().
+				Key("title").
+				Title("Job title"),
 		),
 	)
 
@@ -218,17 +224,19 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			// Form is done, process the data.
 			name := m.signupForm.GetString("name")
 			email := m.signupForm.GetString("email")
+			company := m.signupForm.GetString("company")
+			title := m.signupForm.GetString("title")
 
 			// Send to Google Sheet or webhook here
-			go func(name, email string) {
+			go func(name, email, company, title string) {
 				// TODO: Replace with your Google Sheet endpoint
-				endpoint := "https://your-google-sheet-endpoint.example.com" // <-- Replace this
-				data := fmt.Sprintf("name=%s&email=%s", name, email)
+				endpoint := "https://script.google.com/macros/s/AKfycbx8pH7p7mxwDhyZidQ4Gc-VeqWgzC9C8LOeAKvzA9fM1itVt5oB9xXaLhO2t5VsthrX/exec"
+				data := fmt.Sprintf("name=%s&email=%s&company=%s&title=%s", name, email, company, title)
 				_, err := http.Post(endpoint, "application/x-www-form-urlencoded", strings.NewReader(data))
 				if err != nil {
 					log.Printf("Failed to send signup: %v", err)
 				}
-			}(name, email)
+			}(name, email, company, title)
 
 			m.signupMsg = "Thank you for signing up! You'll stay up to date."
 			m.screen = screenSignupConfirm
