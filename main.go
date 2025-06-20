@@ -455,7 +455,7 @@ var version = "dev" // will be set by goreleaser
 func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 	// The bubbletea middleware will handle the IO.
 	// We can pass tea.WithAltScreen() to use the alternate screen buffer.
-	return initialModel(), []tea.ProgramOption{tea.WithAltScreen()}
+	return initialModel(), nil
 }
 
 func main() {
@@ -499,7 +499,7 @@ func main() {
 		}
 	} else {
 		// Run the TUI locally
-		p := tea.NewProgram(initialModel(), tea.WithAltScreen())
+		p := tea.NewProgram(initialModel())
 		if _, err := p.Run(); err != nil {
 			fmt.Printf("Alas, there's been an error: %v\n", err)
 			os.Exit(1)
