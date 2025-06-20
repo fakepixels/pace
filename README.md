@@ -2,13 +2,13 @@
 
 ![pace-cli.png](public/pace-cli.png)
 
-Welcome to the **Pace CLI**. 
+Welcome to the **Pace CLI**.
 
 > "Hey! Only real G found their way here."
 
 ---
 
-A CLI tool for Pace Capital announcements and updates.
+A CLI tool for Pace Capital announcements and updates, accessible both locally and over SSH.
 
 ## Installation
 
@@ -52,11 +52,15 @@ go install github.com/fakepixels/pace@latest
 
 ## Usage
 
-Simply run:
+The Pace CLI can be run in two modes:
 
+### 1. Local Mode (Default)
+
+For a quick, local experience, simply run the command:
 ```bash
 pace
 ```
+This will launch the application directly in your current terminal session.
 
 Navigate through the menu using:
 - ↑/↓ or k/j to move
@@ -64,8 +68,21 @@ Navigate through the menu using:
 - b to go back
 - q to quit
 
+### 2. SSH Server Mode
+
+To run the app as a secure SSH server that others can connect to, use the `--serve` flag:
+```bash
+pace --serve
+```
+This will start an SSH server. You can then connect to it from another terminal window:
+```bash
+ssh localhost -p 23234
+```
+The first time you start the server, it will automatically generate and save an SSH key in a `.ssh` directory. This key is used to secure the connection.
+
 ## Features
 
+- Run as a local TUI or a secure, shareable SSH server
 - Read announcement posts
 - Send a hello email to Tina
 - Discover random Substack posts
@@ -82,7 +99,7 @@ Check out the full announcement online:
 
 ## 💡 About
 
-Pace CLI is a playful, artful terminal app for the Pace community, built with 💙 using [Bubble Tea](https://github.com/charmbracelet/bubbletea), [Lip Gloss](https://github.com/charmbracelet/lipgloss), and [Glamour](https://github.com/charmbracelet/glamour).
+Pace CLI is a playful, artful terminal app for the Pace community, built with 💙 using [Bubble Tea](https://github.com/charmbracelet/bubbletea), [Lip Gloss](https://github.com/charmbracelet/lipgloss), [Glamour](https://github.com/charmbracelet/glamour), and [Wish](https://github.com/charmbracelet/wish).
 
 ---
 
