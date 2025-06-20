@@ -7,12 +7,13 @@ import (
 	"os"
 	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/bubbles/viewport"
-	"github.com/charmbracelet/lipgloss"
-	"github.com/charmbracelet/glamour"
 	"io/ioutil"
 	"os/exec"
+
+	"github.com/charmbracelet/bubbles/viewport"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/glamour"
+	"github.com/charmbracelet/lipgloss"
 )
 
 // App screens
@@ -68,31 +69,28 @@ var (
 		MarginTop(1)
 
 	welcomeLogo = `
-.------..------..------..------.
-|P.--. ||A.--. ||C.--. ||E.--. |
-| :/\: || (\/) || :/\: || (\/) |
-| (__) || :\/: || :\/: || :\/: |
-| '--'P|| '--'A|| '--'C|| '--'E|
-'------''------''------''------'
+ _______  _______  _______  _______ 
+|       ||   _   ||       ||       |
+|    _  ||  |_|  ||       ||    ___|
+|   |_| ||       ||       ||   |___ 
+|    ___||       ||      _||    ___|
+|   |    |   _   ||     |_ |   |___ 
+|___|    |__| |__||_______||_______|
 `
 	welcomeLogoStyle = lipgloss.NewStyle().
 		Foreground(neonBlue).
-		Bold(true).
-		Margin(1, 0, 0, 0).
-		Align(lipgloss.Center)
+		Bold(true)
 
 	welcomeMsgStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.Color("#a259f7")).
-		Bold(true).
-		Align(lipgloss.Center)
+		Bold(true)
 
 	welcomeBoxStyle = lipgloss.NewStyle().
 		Border(lipgloss.RoundedBorder()).
 		BorderForeground(neonBlue).
 		Background(lipgloss.Color("#181825")).
 		Padding(1, 4).
-		Width(60).
-		Align(lipgloss.Center)
+		Width(60)
 )
 
 type model struct {
@@ -131,7 +129,7 @@ func initialModel() model {
 	vp.SetContent(styled)
 	return model{
 		screen:      screenWelcome,
-		menuChoices: []string{"Read announcement post", "Say hello to Tina", "Try my luck", "Go to Pace Desktop"},
+		menuChoices: []string{"Read latest announcement ✨", "Say hello to Tina", "Try my luck", "Go to Pace Desktop"},
 		substackPosts: []string{
 			"https://fakepixels.substack.com/p/context-is-all-you-need",
 			"https://fakepixels.substack.com/p/the-art-of-understanding-whats-going",
@@ -246,10 +244,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	switch m.screen {
 	case screenWelcome:
-		logo := welcomeLogoStyle.Render(welcomeLogo)
-		msg := welcomeMsgStyle.Render("Hey! Only real G found their way here.")
-		prompt := lipgloss.NewStyle().Align(lipgloss.Center).Render("Press Enter to continue...")
-		return "\n" + welcomeBoxStyle.Render(logo+"\n"+msg+"\n\n"+prompt)
+		logo := welcomeLogo
+		msg := "Welcome to Pace CLI.\nThis is a terminal app to learn about us\nand stay updated for events and surprise drops."
+		prompt := "Press Enter to continue..."
+
+		logoStyled := welcomeLogoStyle.Render(logo)
+		msgStyled := welcomeMsgStyle.Render(msg)
+
+		content := lipgloss.JoinVertical(
+			lipgloss.Center,
+			logoStyled,
+			"\n",
+			msgStyled,
+			"\n\n",
+			prompt,
+		)
+
+		return welcomeBoxStyle.Render(content)
 	case screenMenu:
 		s := menuTitleStyle.Render("What would you like to do?") + "\n"
 		for i, choice := range m.menuChoices {
