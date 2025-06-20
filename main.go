@@ -21,7 +21,7 @@ const (
 	screenWelcome = iota
 	screenMenu
 	screenAnnouncement
-	screenHelloTina
+	screenTeam
 	screenTryMyLuck
 	screenPaceDesktop
 )
@@ -93,13 +93,20 @@ var (
 		Width(60)
 )
 
+type teamMember struct {
+	name  string
+	email string
+}
+
 type model struct {
-	screen      int
-	menuCursor  int
-	menuChoices []string
+	screen       int
+	menuCursor   int
+	menuChoices  []string
+	teamMembers  []teamMember
+	teamCursor   int
 	// For try my luck
 	substackPosts []string
-	selectedPost string
+	selectedPost  string
 	// For announcement
 	viewport viewport.Model
 	viewportReady bool
@@ -129,7 +136,15 @@ func initialModel() model {
 	vp.SetContent(styled)
 	return model{
 		screen:      screenWelcome,
-		menuChoices: []string{"Read latest announcement ✨", "Say hello to Tina", "Try my luck", "Go to Pace Desktop"},
+		menuChoices: []string{"Read latest announcement ✨", "Pace Team Members", "Try my luck", "Go to Pace Desktop"},
+		teamMembers: []teamMember{
+			{name: "Chris Peck", email: "chris@pacecapital.com"},
+			{name: "Jordan Cooper", email: "jordan@pacecapital.com"},
+			{name: "Arian Naik", email: ""},
+			{name: "Grace Kasten", email: ""},
+			{name: "Tina He", email: "tina@pacecapital.com"},
+		},
+		teamCursor: 0,
 		substackPosts: []string{
 			"https://fakepixels.substack.com/p/context-is-all-you-need",
 			"https://fakepixels.substack.com/p/the-art-of-understanding-whats-going",
@@ -174,10 +189,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				case 0:
 					m.screen = screenAnnouncement
 				case 1:
-					// Open mailto link
-					mailto := "mailto:tina@pacecapital.com?subject=Hi%20from%20the%20dark&body=I%20saw%20your%20Pace%20CLI%20and%20wanted%20to%20say%20hi."
-					exec.Command("open", mailto).Start()
-					m.screen = screenHelloTina
+					m.screen = screenTeam
 				case 2:
 					// Pick a random post
 					rand.Seed(time.Now().UnixNano())
@@ -204,6 +216,30 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.screen = screenMenu
 			case "o":
 				exec.Command("open", announcementSiteURL).Start()
+			case "e":
+				mailto := "mailto:tina@pacecapital.com?subject=Hi%20from%20the%20dark&body=I%20saw%20your%20Pace%20CLI%20announcement%20and%20wanted%20to%20say%20hi."
+				exec.Command("open", mailto).Start()
+			case "q", "ctrl+c":
+				return m, tea.Quit
+			}
+		case screenTeam:
+			switch msg.String() {
+			case "up", "k":
+				if m.teamCursor > 0 {
+					m.teamCursor--
+				}
+			case "down", "j":
+				if m.teamCursor < len(m.teamMembers)-1 {
+					m.teamCursor++
+				}
+			case "enter":
+				selectedMember := m.teamMembers[m.teamCursor]
+				if selectedMember.email != "" {
+					mailto := fmt.Sprintf("mailto:%s?subject=Hi%%20from%%20the%%20dark&body=I%%20saw%%20your%%20Pace%%20CLI%%20and%%20wanted%%20to%%20say%%20hi.", selectedMember.email)
+					exec.Command("open", mailto).Start()
+				}
+			case "b":
+				m.screen = screenMenu
 			case "q", "ctrl+c":
 				return m, tea.Quit
 			}
@@ -214,7 +250,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if msg.String() == "q" || msg.String() == "ctrl+c" {
 				return m, tea.Quit
 			}
-		case screenHelloTina, screenTryMyLuck:
+		case screenTryMyLuck:
 			if msg.String() == "b" {
 				m.screen = screenMenu
 			}
@@ -275,10 +311,28 @@ func (m model) View() string {
 	case screenAnnouncement:
 		title := announcementTitleStyle.Render("Announcement Post")
 		content := m.viewport.View()
-		controls := "\n[↑/↓/PgUp/PgDn scroll, o: open in browser, b: back, q: quit]"
+		controls := "\n[↑/↓/PgUp/PgDn scroll, o: open in browser, e: email Tina, b: back, q: quit]"
 		return title + "\n" + announcementStyle.Render(content) + controls
-	case screenHelloTina:
-		return "Mail client opened! Say hi to Tina at tina@pacecapital.com\n\nPress 'b' to go back, 'q' to quit."
+	case screenTeam:
+		s := menuTitleStyle.Render("Pace Team") + "\n\n"
+		for i, member := range m.teamMembers {
+			rowStyle := menuBoxStyle
+			if m.teamCursor == i {
+				rowStyle = menuBoxSelectedStyle
+			}
+
+			email := ""
+			if member.email != "" {
+				email = " - " + member.email
+			} else {
+				email = " (no email provided)"
+			}
+
+			row := fmt.Sprintf("%s%s", member.name, email)
+			s += rowStyle.Render(row) + "\n"
+		}
+		s += menuFooterStyle.Render("\nUse ↑/↓ or k/j to move, Enter to email. Press b to go back.")
+		return s
 	case screenTryMyLuck:
 		return fmt.Sprintf("Try My Luck\n\nHere's a random Substack post for you:\n%s\n\nPress 'b' to go back, 'q' to quit.", m.selectedPost)
 	case screenPaceDesktop:

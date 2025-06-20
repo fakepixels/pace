@@ -1,8 +1,8 @@
-# I'm (Re)Joining Pace Capital
-
-# You're seeing this because you're one of the real ones. 
+# Tina is (Re)Joining Pace Capital
 
 # Press "o" to open original post in browser.
+
+# Press "e" to email her and say hello. 
 
 Every morning, we wake into histories unfolding, currents of possibility quietly reshaping the future. We stand together at the edge of a great transformation, sensing the gathering force of change. This moment is thrilling and unsettling, stripping away distractions and revealing the one thing that truly matters: our infinite capacity for creation.
 
