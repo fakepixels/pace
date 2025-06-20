@@ -8,11 +8,15 @@ import (
 	"time"
 
 	"io/ioutil"
+	"log"
+	"net/http"
 	"os/exec"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/glamour"
+	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -24,6 +28,8 @@ const (
 	screenTeam
 	screenTryMyLuck
 	screenPaceDesktop
+	screenSignup
+	screenSignupConfirm
 )
 
 const announcementSiteURL = "https://pace-announcement.vercel.app/"
@@ -97,7 +103,6 @@ var (
 		BorderForeground(lipgloss.Color("63")).
 		Background(lipgloss.Color("236")).
 		Padding(1, 2).
-		Margin(1, 0).
 		Width(40)
 
 	teamCardSelectedStyle = teamCardStyle.Copy().
@@ -122,10 +127,13 @@ type model struct {
 	substackPosts []string
 	selectedPost  string
 	// For announcement
-	viewport viewport.Model
+	viewport      viewport.Model
 	viewportReady bool
 	announcementMD string // holds the loaded markdown
 	announcementRendered string // holds the glamour-rendered output
+	// For signup form
+	signupForm *huh.Form
+	signupMsg  string
 }
 
 func initialModel() model {
@@ -148,14 +156,33 @@ func initialModel() model {
 	}
 	vp := viewport.New(viewportWidth, viewportHeight)
 	vp.SetContent(styled)
+
+	// Create the signup form
+	form := huh.NewForm(
+		huh.NewGroup(
+			huh.NewInput().
+				Key("name").
+				Title("What's your name?"),
+			huh.NewInput().
+				Key("email").
+				Title("Your email address").
+				Validate(func(str string) error {
+					if !strings.Contains(str, "@") || !strings.Contains(str, ".") {
+						return fmt.Errorf("Please enter a valid email address.")
+					}
+					return nil
+				}),
+		),
+	)
+
 	return model{
 		screen:      screenWelcome,
-		menuChoices: []string{"Read latest announcement ✨", "Pace Team Members", "Try my luck", "Go to Pace Desktop"},
+		menuChoices: []string{"Read latest announcement ✨", "Pace Team Members", "Try my luck", "Go to Pace Desktop", "Sign up to stay up to date"},
 		teamMembers: []teamMember{
-			{name: "Chris Peck", email: "chris@pacecapital.com", emoji: "🦉"},
-			{name: "Jordan Cooper", email: "jordan@pacecapital.com", emoji: "🦁"},
 			{name: "Aryan Naik", email: "aryan@pacecapital.com", emoji: "🦄"},
+			{name: "Chris Peck", email: "chris@pacecapital.com", emoji: "🦉"},
 			{name: "Grace Kasten", email: "grace@pacecapital.com", emoji: "🦋"},
+			{name: "Jordan Cooper", email: "jordan@pacecapital.com", emoji: "🦁"},
 			{name: "Tina He", email: "tina@pacecapital.com", emoji: "🐉"},
 		},
 		teamCursor: 0,
@@ -168,17 +195,48 @@ func initialModel() model {
 			"https://fakepixels.substack.com/p/the-spectacle-of-building",
 			"https://fakepixels.substack.com/p/bring-the-mind-home",
 		},
-		viewport: vp,
-		announcementMD: md,
+		viewport:             vp,
+		announcementMD:       md,
 		announcementRendered: styled,
+		signupForm:           form,
 	}
 }
 
 func (m model) Init() tea.Cmd {
-	return nil
+	return nil // No initial command needed
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	// Handle the signup form screen separately
+	if m.screen == screenSignup {
+		form, cmd := m.signupForm.Update(msg)
+		if f, ok := form.(*huh.Form); ok {
+			m.signupForm = f
+		}
+
+		if m.signupForm.State == huh.StateCompleted {
+			// Form is done, process the data.
+			name := m.signupForm.GetString("name")
+			email := m.signupForm.GetString("email")
+
+			// Send to Google Sheet or webhook here
+			go func(name, email string) {
+				// TODO: Replace with your Google Sheet endpoint
+				endpoint := "https://your-google-sheet-endpoint.example.com" // <-- Replace this
+				data := fmt.Sprintf("name=%s&email=%s", name, email)
+				_, err := http.Post(endpoint, "application/x-www-form-urlencoded", strings.NewReader(data))
+				if err != nil {
+					log.Printf("Failed to send signup: %v", err)
+				}
+			}(name, email)
+
+			m.signupMsg = "Thank you for signing up! You'll stay up to date."
+			m.screen = screenSignupConfirm
+		}
+
+		return m, cmd
+	}
+
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch m.screen {
@@ -213,6 +271,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				case 3:
 					exec.Command("open", paceDesktopURL).Start()
 					m.screen = screenPaceDesktop
+				case 4:
+					m.screen = screenSignup
+					return m, m.signupForm.Init() // Initialize/reset the form
 				}
 			}
 		case screenAnnouncement:
@@ -271,6 +332,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			if msg.String() == "q" || msg.String() == "ctrl+c" {
 				return m, tea.Quit
 			}
+		case screenSignupConfirm:
+			if msg.String() == "b" {
+				m.screen = screenMenu
+			}
+			if msg.String() == "q" || msg.String() == "ctrl+c" {
+				return m, tea.Quit
+			}
 		}
 	case tea.WindowSizeMsg:
 		if m.screen == screenAnnouncement {
@@ -292,6 +360,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
+	if m.screen == screenSignup {
+		return m.signupForm.View()
+	}
+
 	switch m.screen {
 	case screenWelcome:
 		logo := welcomeLogo
@@ -355,6 +427,8 @@ func (m model) View() string {
 		url := lipgloss.NewStyle().Foreground(lipgloss.Color("33")).Underline(true).Render(paceDesktopURL)
 		msg := "Opening Pace Desktop in your browser...\n" + url + "\n\nPress 'b' to go back, 'q' to quit."
 		return title + "\n" + announcementStyle.Render(msg)
+	case screenSignupConfirm:
+		return fmt.Sprintf("%s\n\nPress 'b' to go back, 'q' to quit.", m.signupMsg)
 	}
 	return ""
 }
