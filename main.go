@@ -4,20 +4,24 @@ import (
 	"flag"
 	"fmt"
 	"math/rand"
-	"os"
-	"time"
-
-	"io/ioutil"
-	"log"
 	"net/http"
+	"os"
 	"os/exec"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/log"
+	"github.com/charmbracelet/ssh"
+	"github.com/charmbracelet/wish"
+	"github.com/charmbracelet/wish/bubbletea"
+	"github.com/charmbracelet/wish/logging"
 )
 
 // App screens
@@ -30,6 +34,11 @@ const (
 	screenPaceDesktop
 	screenSignup
 	screenSignupConfirm
+)
+
+const (
+	host = "0.0.0.0"
+	port = "23234"
 )
 
 const announcementSiteURL = "https://pace-announcement.vercel.app/"
@@ -140,7 +149,7 @@ func initialModel() model {
 	viewportWidth := 80
 	viewportHeight := 20
 	// Load announcement markdown from file
-	mdBytes, err := ioutil.ReadFile("announcement.md")
+	mdBytes, err := os.ReadFile("announcement.md")
 	md := ""
 	if err == nil {
 		md = string(mdBytes)
@@ -234,7 +243,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				data := fmt.Sprintf("name=%s&email=%s&company=%s&title=%s", name, email, company, title)
 				_, err := http.Post(endpoint, "application/x-www-form-urlencoded", strings.NewReader(data))
 				if err != nil {
-					log.Printf("Failed to send signup: %v", err)
+					log.Errorf("Failed to send signup: %v", err)
 				}
 			}(name, email, company, title)
 
@@ -443,6 +452,12 @@ func (m model) View() string {
 
 var version = "dev" // will be set by goreleaser
 
+func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
+	// The bubbletea middleware will handle the IO.
+	// We can pass tea.WithAltScreen() to use the alternate screen buffer.
+	return initialModel(), []tea.ProgramOption{tea.WithAltScreen()}
+}
+
 func main() {
 	flagVersion := false
 	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
@@ -453,9 +468,31 @@ func main() {
 		fmt.Println(version)
 		return
 	}
-	p := tea.NewProgram(initialModel())
-	if _, err := p.Run(); err != nil {
-		fmt.Printf("Alas, there's been an error: %v\n", err)
-		os.Exit(1)
+
+	s, err := wish.NewServer(
+		wish.WithAddress(fmt.Sprintf("%s:%s", host, port)),
+		wish.WithHostKeyPath(".ssh/pace_cli_key"),
+		wish.WithMiddleware(
+			bubbletea.Middleware(teaHandler),
+			logging.Middleware(),
+		),
+	)
+	if err != nil {
+		log.Fatal("Could not start server", "error", err)
+	}
+
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	log.Infof("Starting SSH server on %s:%s", host, port)
+	go func() {
+		if err = s.ListenAndServe(); err != nil {
+			log.Fatal("Server could not listen", "error", err)
+		}
+	}()
+
+	<-done
+	log.Info("Stopping SSH server")
+	if err := s.Close(); err != nil {
+		log.Fatal("Could not stop server", "error", err)
 	}
 } 
