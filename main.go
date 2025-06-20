@@ -91,11 +91,25 @@ var (
 		Background(lipgloss.Color("#181825")).
 		Padding(1, 4).
 		Width(60)
+
+	teamCardStyle = lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("63")).
+		Background(lipgloss.Color("236")).
+		Padding(1, 2).
+		Margin(1, 0).
+		Width(40)
+
+	teamCardSelectedStyle = teamCardStyle.Copy().
+		BorderForeground(lipgloss.Color("205")).
+		Background(lipgloss.Color("17")).
+		Bold(true)
 )
 
 type teamMember struct {
 	name  string
 	email string
+	emoji string
 }
 
 type model struct {
@@ -138,11 +152,11 @@ func initialModel() model {
 		screen:      screenWelcome,
 		menuChoices: []string{"Read latest announcement ✨", "Pace Team Members", "Try my luck", "Go to Pace Desktop"},
 		teamMembers: []teamMember{
-			{name: "Chris Peck", email: "chris@pacecapital.com"},
-			{name: "Jordan Cooper", email: "jordan@pacecapital.com"},
-			{name: "Aryan Naik", email: "aryan@pacecapital.com"},
-			{name: "Grace Kasten", email: "grace@pacecapital.com"},
-			{name: "Tina He", email: "tina@pacecapital.com"},
+			{name: "Chris Peck", email: "chris@pacecapital.com", emoji: "🦉"},
+			{name: "Jordan Cooper", email: "jordan@pacecapital.com", emoji: "🦁"},
+			{name: "Aryan Naik", email: "aryan@pacecapital.com", emoji: "🦄"},
+			{name: "Grace Kasten", email: "grace@pacecapital.com", emoji: "🦋"},
+			{name: "Tina He", email: "tina@pacecapital.com", emoji: "🐉"},
 		},
 		teamCursor: 0,
 		substackPosts: []string{
@@ -314,22 +328,23 @@ func (m model) View() string {
 		controls := "\n[↑/↓/PgUp/PgDn scroll, o: open in browser, e: email Tina, b: back, q: quit]"
 		return title + "\n" + announcementStyle.Render(content) + controls
 	case screenTeam:
-		s := menuTitleStyle.Render("Pace Team") + "\n\n"
+		s := menuTitleStyle.Render("Pace Team Members") + "\n"
 		for i, member := range m.teamMembers {
-			rowStyle := menuBoxStyle
+			cardStyle := teamCardStyle
 			if m.teamCursor == i {
-				rowStyle = menuBoxSelectedStyle
+				cardStyle = teamCardSelectedStyle
 			}
 
-			email := ""
+			nameLine := lipgloss.NewStyle().Bold(true).Render(fmt.Sprintf("%s %s", member.emoji, member.name))
+			emailLine := ""
 			if member.email != "" {
-				email = " - " + member.email
+				emailLine = lipgloss.NewStyle().Foreground(lipgloss.Color("39")).Underline(true).Render(member.email)
 			} else {
-				email = " (no email provided)"
+				emailLine = lipgloss.NewStyle().Foreground(lipgloss.Color("241")).Italic(true).Render("No email provided")
 			}
 
-			row := fmt.Sprintf("%s%s", member.name, email)
-			s += rowStyle.Render(row) + "\n"
+			card := fmt.Sprintf("%s\n%s", nameLine, emailLine)
+			s += cardStyle.Render(card) + "\n"
 		}
 		s += menuFooterStyle.Render("\nUse ↑/↓ or k/j to move, Enter to email. Press b to go back.")
 		return s
