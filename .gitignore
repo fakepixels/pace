@@ -13,4 +13,4 @@ go.work
 
 # OS specific
 .DS_Store
-.env 
+.env .ssh/

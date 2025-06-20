@@ -45,43 +45,43 @@ const announcementSiteURL = "https://pace-announcement.vercel.app/"
 const paceDesktopURL = "https://desktop.pacecapital.com/"
 
 var (
-	neonBlue = lipgloss.Color("#1e90ff") // Neon blue
+	neonBlue      = lipgloss.Color("#1e90ff")    // Neon blue
 	neonBlueLight = lipgloss.Color("#63aaff") // Lighter neon blue for selected
 
 	announcementStyle = lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder()).
-		BorderForeground(lipgloss.Color("#888888")).
-		Foreground(lipgloss.Color("#a259f7")).
-		Padding(1, 2).
-		Margin(1, 2).
-		Width(80)
+				Border(lipgloss.RoundedBorder()).
+				BorderForeground(lipgloss.Color("#888888")).
+				Foreground(lipgloss.Color("#a259f7")).
+				Padding(1, 2).
+				Margin(1, 2).
+				Width(80)
 	announcementTitleStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.Color("205")).
-		Background(lipgloss.Color("236")).
-		Padding(0, 1)
+				Bold(true).
+				Foreground(lipgloss.Color("205")).
+				Background(lipgloss.Color("236")).
+				Padding(0, 1)
 
 	menuBoxStyle = lipgloss.NewStyle().
-		Padding(0, 2).
-		Margin(0, 0).
-		Border(lipgloss.NormalBorder()).
-		BorderForeground(neonBlue).
-		Foreground(neonBlue)
+			Padding(0, 2).
+			Margin(0, 0).
+			Border(lipgloss.NormalBorder()).
+			BorderForeground(neonBlue).
+			Foreground(neonBlue)
 
 	menuBoxSelectedStyle = menuBoxStyle.Copy().
-		BorderForeground(neonBlueLight).
-		Background(lipgloss.Color("#24283b")).
-		Foreground(neonBlueLight).
-		Bold(true)
+				BorderForeground(neonBlueLight).
+				Background(lipgloss.Color("#24283b")).
+				Foreground(neonBlueLight).
+				Bold(true)
 
 	menuTitleStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(neonBlue).
-		MarginBottom(1)
+			Bold(true).
+			Foreground(neonBlue).
+			MarginBottom(1)
 
 	menuFooterStyle = lipgloss.NewStyle().
-		Foreground(neonBlue).
-		MarginTop(1)
+			Foreground(neonBlue).
+			MarginTop(1)
 
 	welcomeLogo = `
  _______  _______  _______  _______ 
@@ -93,31 +93,31 @@ var (
 |___|    |__| |__||_______||_______|
 `
 	welcomeLogoStyle = lipgloss.NewStyle().
-		Foreground(neonBlue).
-		Bold(true)
+				Foreground(neonBlue).
+				Bold(true)
 
 	welcomeMsgStyle = lipgloss.NewStyle().
-		Foreground(lipgloss.Color("#a259f7")).
-		Bold(true)
+			Foreground(lipgloss.Color("#a259f7")).
+			Bold(true)
 
 	welcomeBoxStyle = lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder()).
-		BorderForeground(neonBlue).
-		Background(lipgloss.Color("#181825")).
-		Padding(1, 4).
-		Width(60)
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(neonBlue).
+			Background(lipgloss.Color("#181825")).
+			Padding(1, 4).
+			Width(60)
 
 	teamCardStyle = lipgloss.NewStyle().
-		Border(lipgloss.NormalBorder()).
-		BorderForeground(lipgloss.Color("63")).
-		Background(lipgloss.Color("236")).
-		Padding(1, 2).
-		Width(40)
+			Border(lipgloss.NormalBorder()).
+			BorderForeground(lipgloss.Color("63")).
+			Background(lipgloss.Color("236")).
+			Padding(1, 2).
+			Width(40)
 
 	teamCardSelectedStyle = teamCardStyle.Copy().
-		BorderForeground(lipgloss.Color("205")).
-		Background(lipgloss.Color("17")).
-		Bold(true)
+				BorderForeground(lipgloss.Color("205")).
+				Background(lipgloss.Color("17")).
+				Bold(true)
 )
 
 type teamMember struct {
@@ -127,18 +127,18 @@ type teamMember struct {
 }
 
 type model struct {
-	screen       int
-	menuCursor   int
-	menuChoices  []string
-	teamMembers  []teamMember
-	teamCursor   int
+	screen               int
+	menuCursor           int
+	menuChoices          []string
+	teamMembers          []teamMember
+	teamCursor           int
 	// For try my luck
 	substackPosts []string
 	selectedPost  string
 	// For announcement
-	viewport      viewport.Model
-	viewportReady bool
-	announcementMD string // holds the loaded markdown
+	viewport             viewport.Model
+	viewportReady        bool
+	announcementMD       string // holds the loaded markdown
 	announcementRendered string // holds the glamour-rendered output
 	// For signup form
 	signupForm *huh.Form
@@ -459,6 +459,7 @@ func teaHandler(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 }
 
 func main() {
+	serve := flag.Bool("serve", false, "serve the app over SSH")
 	flagVersion := false
 	flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
 	flagSet.BoolVar(&flagVersion, "version", false, "print version and exit")
@@ -469,30 +470,39 @@ func main() {
 		return
 	}
 
-	s, err := wish.NewServer(
-		wish.WithAddress(fmt.Sprintf("%s:%s", host, port)),
-		wish.WithHostKeyPath(".ssh/pace_cli_key"),
-		wish.WithMiddleware(
-			bubbletea.Middleware(teaHandler),
-			logging.Middleware(),
-		),
-	)
-	if err != nil {
-		log.Fatal("Could not start server", "error", err)
-	}
-
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
-	log.Infof("Starting SSH server on %s:%s", host, port)
-	go func() {
-		if err = s.ListenAndServe(); err != nil {
-			log.Fatal("Server could not listen", "error", err)
+	if *serve {
+		s, err := wish.NewServer(
+			wish.WithAddress(fmt.Sprintf("%s:%s", host, port)),
+			wish.WithHostKeyPath(".ssh/pace_cli_key"),
+			wish.WithMiddleware(
+				bubbletea.Middleware(teaHandler),
+				logging.Middleware(),
+			),
+		)
+		if err != nil {
+			log.Fatal("Could not start server", "error", err)
 		}
-	}()
 
-	<-done
-	log.Info("Stopping SSH server")
-	if err := s.Close(); err != nil {
-		log.Fatal("Could not stop server", "error", err)
+		done := make(chan os.Signal, 1)
+		signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+		log.Infof("Starting SSH server on %s:%s", host, port)
+		go func() {
+			if err = s.ListenAndServe(); err != nil {
+				log.Fatal("Server could not listen", "error", err)
+			}
+		}()
+
+		<-done
+		log.Info("Stopping SSH server")
+		if err := s.Close(); err != nil {
+			log.Fatal("Could not stop server", "error", err)
+		}
+	} else {
+		// Run the TUI locally
+		p := tea.NewProgram(initialModel(), tea.WithAltScreen())
+		if _, err := p.Run(); err != nil {
+			fmt.Printf("Alas, there's been an error: %v\n", err)
+			os.Exit(1)
+		}
 	}
 } 
