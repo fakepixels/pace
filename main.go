@@ -140,8 +140,8 @@ func initialModel() model {
 		teamMembers: []teamMember{
 			{name: "Chris Peck", email: "chris@pacecapital.com"},
 			{name: "Jordan Cooper", email: "jordan@pacecapital.com"},
-			{name: "Arian Naik", email: ""},
-			{name: "Grace Kasten", email: ""},
+			{name: "Aryan Naik", email: "aryan@pacecapital.com"},
+			{name: "Grace Kasten", email: "grace@pacecapital.com"},
 			{name: "Tina He", email: "tina@pacecapital.com"},
 		},
 		teamCursor: 0,
