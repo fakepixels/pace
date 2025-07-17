@@ -1,0 +1,22 @@
+{
+  "go.useLanguageServer": true,
+  "go.formatTool": "gofmt",
+  "go.lintTool": "golangci-lint",
+  "go.vetOnSave": "package",
+  "go.formatOnSave": true,
+  "go.lintOnSave": "package",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "files.exclude": {
+    "**/bin": true,
+    "**/dist": true,
+    "**/.ssh": true
+  },
+  "search.exclude": {
+    "**/bin": true,
+    "**/dist": true,
+    "**/vendor": true
+  }
+}
