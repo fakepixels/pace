@@ -45,21 +45,21 @@ const announcementSiteURL = "https://pace-announcement.vercel.app/"
 const paceDesktopURL = "https://desktop.pacecapital.com/"
 
 var (
-	neonBlue      = lipgloss.Color("#1e90ff")    // Neon blue
+	neonBlue      = lipgloss.Color("#1e90ff")  // Neon blue
 	neonBlueLight = lipgloss.Color("#63aaff") // Lighter neon blue for selected
 
 	announcementStyle = lipgloss.NewStyle().
-				Border(lipgloss.RoundedBorder()).
-				BorderForeground(lipgloss.Color("#888888")).
-				Foreground(lipgloss.Color("#a259f7")).
-				Padding(1, 2).
-				Margin(1, 2).
-				Width(80)
+			Border(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color("#888888")).
+			Foreground(lipgloss.Color("#a259f7")).
+			Padding(1, 2).
+			Margin(1, 2).
+			Width(80)
 	announcementTitleStyle = lipgloss.NewStyle().
-				Bold(true).
-				Foreground(lipgloss.Color("205")).
-				Background(lipgloss.Color("236")).
-				Padding(0, 1)
+			Bold(true).
+			Foreground(lipgloss.Color("205")).
+			Background(lipgloss.Color("236")).
+			Padding(0, 1)
 
 	menuBoxStyle = lipgloss.NewStyle().
 			Padding(0, 2).
@@ -69,10 +69,10 @@ var (
 			Foreground(neonBlue)
 
 	menuBoxSelectedStyle = menuBoxStyle.Copy().
-				BorderForeground(neonBlueLight).
-				Background(lipgloss.Color("#24283b")).
-				Foreground(neonBlueLight).
-				Bold(true)
+			BorderForeground(neonBlueLight).
+			Background(lipgloss.Color("#24283b")).
+			Foreground(neonBlueLight).
+			Bold(true)
 
 	menuTitleStyle = lipgloss.NewStyle().
 			Bold(true).
@@ -93,8 +93,8 @@ var (
 |___|    |__| |__||_______||_______|
 `
 	welcomeLogoStyle = lipgloss.NewStyle().
-				Foreground(neonBlue).
-				Bold(true)
+			Foreground(neonBlue).
+			Bold(true)
 
 	welcomeMsgStyle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color("#a259f7")).
@@ -115,9 +115,9 @@ var (
 			Width(40)
 
 	teamCardSelectedStyle = teamCardStyle.Copy().
-				BorderForeground(lipgloss.Color("205")).
-				Background(lipgloss.Color("17")).
-				Bold(true)
+			BorderForeground(lipgloss.Color("205")).
+			Background(lipgloss.Color("17")).
+			Bold(true)
 )
 
 type teamMember struct {
