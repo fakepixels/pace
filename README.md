@@ -12,43 +12,51 @@ A CLI tool for Pace Capital announcements and updates, accessible both locally a
 
 ## Installation
 
-### Option 1: Build from Source
+### Quick Install (Recommended)
 
-If you have Go 1.24.4 or later installed. If you haven't, you can install Go by:
+**One-line installer for macOS/Linux:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/fakepixels/pace/main/install.sh | bash
+```
 
-1. Visit [Go's official download page](https://go.dev/dl/)
-2. Run the installer and follow the prompts
-3. Verify installation by opening a terminal and running:
-   ```bash
-   go version
-   ```
+### Package Managers
 
-Once Go is installed:
+**Homebrew (macOS/Linux):**
+```bash
+brew install fakepixels/tap/pace
+```
 
+**Go Install:**
 ```bash
 go install github.com/fakepixels/pace@latest
 ```
 
-### Option 2: Download Pre-built Binary
+### Manual Installation
+
+**Download Pre-built Binaries:**
 
 1. Visit the [releases page](https://github.com/fakepixels/pace/releases/latest)
-2. Download the archive for your operating system.
-3. Extract the archive:
-   ```bash
-   # For macOS/Linux:
-   tar xzf pace_*_*.tar.gz
-   
-   # For Windows:
-   # Use Windows Explorer to extract the .zip file
-   ```
-4. Move the binary to your PATH:
+2. Download the archive for your operating system
+3. Extract and install:
    ```bash
    # macOS/Linux:
+   tar xzf pace_*_*.tar.gz
    sudo mv pace /usr/local/bin/
 
    # Windows:
-   # Move pace.exe to C:\Windows\System32\
+   # Extract the .zip file and move pace.exe to your PATH
    ```
+
+**Build from Source:**
+
+Requirements: [Go 1.24.4+](https://golang.org/dl/)
+
+```bash
+git clone https://github.com/fakepixels/pace.git
+cd pace
+make build
+sudo make install
+```
 
 ## Usage
 
@@ -96,6 +104,25 @@ Check out the full announcement online:
 👉 [pace-announcement.vercel.app](https://pace-announcement.vercel.app/)
 
 ---
+
+## 🛠️ Development
+
+**Quick Setup:**
+```bash
+git clone https://github.com/fakepixels/pace.git
+cd pace
+make setup
+make dev
+```
+
+**Available Commands:**
+- `make dev` - Run in development mode
+- `make build` - Build binary
+- `make test` - Run tests
+- `make install` - Install locally
+- `make help` - Show all commands
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development guidelines.
 
 ## 💡 About
 
