@@ -10,11 +10,17 @@ Welcome to the **Pace CLI**.
 
 A CLI tool for Pace Capital announcements and updates, accessible both locally and over SSH.
 
-## Installation
+### ✨ What's New
+- **One-line installer** for instant setup
+- **Enhanced developer experience** with comprehensive tooling
+- **Automated releases** with cross-platform binaries
+- **Multiple installation methods** to fit your workflow
+
+## 🚀 Installation
 
 ### Quick Install (Recommended)
 
-**One-line installer for macOS/Linux:**
+**One command to install on macOS/Linux:**
 ```bash
 curl -fsSL https://raw.githubusercontent.com/fakepixels/pace/main/install.sh | bash
 ```
@@ -23,70 +29,85 @@ curl -fsSL https://raw.githubusercontent.com/fakepixels/pace/main/install.sh | b
 
 **Homebrew (macOS/Linux):**
 ```bash
+# Coming soon - Homebrew tap in progress
 brew install fakepixels/tap/pace
 ```
 
-**Go Install:**
+**Go users:**
 ```bash
 go install github.com/fakepixels/pace@latest
 ```
 
-### Manual Installation
+### Other Options
 
-**Download Pre-built Binaries:**
+<details>
+<summary>📦 Download pre-built binaries</summary>
 
-1. Visit the [releases page](https://github.com/fakepixels/pace/releases/latest)
-2. Download the archive for your operating system
-3. Extract and install:
+1. Go to [releases](https://github.com/fakepixels/pace/releases/latest)
+2. Download for your platform
+3. Extract and move to PATH:
    ```bash
    # macOS/Linux:
-   tar xzf pace_*_*.tar.gz
-   sudo mv pace /usr/local/bin/
-
-   # Windows:
-   # Extract the .zip file and move pace.exe to your PATH
+   tar xzf pace_*_*.tar.gz && sudo mv pace /usr/local/bin/
+   
+   # Windows: Extract .zip and add pace.exe to your PATH
    ```
+</details>
 
-**Build from Source:**
+<details>
+<summary>🛠️ Build from source</summary>
 
-Requirements: [Go 1.24.4+](https://golang.org/dl/)
+Requires [Go 1.24.4+](https://golang.org/dl/)
 
 ```bash
 git clone https://github.com/fakepixels/pace.git
 cd pace
-make build
-sudo make install
+make install    # Builds and installs in one step
+```
+</details>
+
+### ✅ Verify Installation
+
+```bash
+pace --version
 ```
 
-## Usage
+## 🎮 Usage
 
-The Pace CLI can be run in two modes:
+### Quick Start
+```bash
+# Run the app locally
+pace
 
-### 1. Local Mode (Default)
+# Check version
+pace --version
 
-For a quick, local experience, simply run the command:
+# Get help
+pace --help
+```
+
+### Two Ways to Run
+
+**🖥️ Local Mode (Default)**
 ```bash
 pace
 ```
-This will launch the application directly in your current terminal session.
+Launches the interactive terminal app instantly in your current session.
 
-Navigate through the menu using:
-- ↑/↓ or k/j to move
-- Enter to select
-- b to go back
-- q to quit
-
-### 2. SSH Server Mode
-
-To run the app as a secure SSH server that others can connect to, use the `--serve` flag:
+**🌐 SSH Server Mode**
 ```bash
 pace --serve
 ```
-This will start an SSH server. You can then connect to it from another terminal window:
+Starts a secure SSH server that others can connect to:
 ```bash
 ssh localhost -p 23234
 ```
-The first time you start the server, it will automatically generate and save an SSH key in a `.ssh` directory. This key is used to secure the connection.
+
+### Navigation
+- **↑/↓** or **k/j** - Move through options
+- **Enter** - Select
+- **b** - Go back
+- **q** - Quit
 
 ## Features
 
